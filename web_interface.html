@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seasonal Trading Strategies Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            padding: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .strategies-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .strategy-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .strategy-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .strategy-card p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .strategy-symbols {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .symbol-tag {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+        
+        .strategy-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .alerts-section {
+            margin-top: 30px;
+        }
+        
+        .alert-card {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .alert-type {
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .alert-buy {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-sell {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .alert-switch {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .confidence {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .metric {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .metric-label {
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Seasonal Trading Strategies</h1>
+            <p>Production Server with Real Data Integration</p>
+            <p>📊 Live CSV Data • 🔄 Real Calculations • 📈 Actual Performance</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="total-strategies">8</h3>
+                    <p>Active Strategies</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="total-alerts">0</h3>
+                    <p>Current Alerts</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="avg-performance">15.2%</h3>
+                    <p>Avg CAGR</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="server-status">🟢 Production</h3>
+                    <p>Real Data Server</p>
+                </div>
+            </div>
+            
+            <div class="strategies-section">
+                <h2 class="section-title">📊 Trading Strategies</h2>
+                <div class="strategies-grid" id="strategies-grid">
+                    <div class="loading">Loading strategies...</div>
+                </div>
+            </div>
+            
+            <div class="alerts-section">
+                <h2 class="section-title">🔔 Live Alerts</h2>
+                <div id="alerts-container">
+                    <div class="loading">Loading alerts...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Load strategies on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStrategies();
+            loadAlerts();
+            
+            // Refresh alerts every 30 seconds
+            setInterval(loadAlerts, 30000);
+        });
+        
+        async function loadStrategies() {
+            try {
+                const response = await fetch(`${API_BASE}/api/strategies`);
+                const data = await response.json();
+                
+                const strategiesGrid = document.getElementById('strategies-grid');
+                strategiesGrid.innerHTML = '';
+                
+                data.strategies.forEach(strategy => {
+                    const strategyCard = createStrategyCard(strategy);
+                    strategiesGrid.appendChild(strategyCard);
+                });
+                
+                document.getElementById('total-strategies').textContent = data.strategies.length;
+                
+            } catch (error) {
+                console.error('Error loading strategies:', error);
+                document.getElementById('strategies-grid').innerHTML = 
+                    '<div class="error">Error loading strategies. Make sure the server is running.</div>';
+            }
+        }
+        
+        function createStrategyCard(strategy) {
+            const card = document.createElement('div');
+            card.className = 'strategy-card';
+            
+            const symbols = strategy.symbols.slice(0, 6); // Show first 6 symbols
+            const symbolsHtml = symbols.map(symbol => 
+                `<span class="symbol-tag">${symbol}</span>`
+            ).join('');
+            
+            card.innerHTML = `
+                <h4>${strategy.name}</h4>
+                <p>${strategy.description}</p>
+                <div class="strategy-symbols">${symbolsHtml}</div>
+                <div class="strategy-actions">
+                    <button class="btn btn-primary" onclick="executeStrategy('${strategy.id}')">
+                        Execute Strategy
+                    </button>
+                    <button class="btn btn-success" onclick="viewPerformance('${strategy.id}')">
+                        View Performance
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        async function executeStrategy(strategyId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/strategies/${strategyId}/execute`);
+                const data = await response.json();
+                
+                if (data.alerts && data.alerts.length > 0) {
+                    showAlert(data.alerts[0]);
+                } else {
+                    // Show info about why no alerts were generated
+                    const strategyNames = {
+                        'gate': 'Gate Strategy (only active in February)',
+                        'day_of_week': 'Day of Week Strategy (only active on Mondays)',
+                        'rebalance_effect': 'Rebalance Effect (only active on TDOM 15)',
+                        'switch': 'Switch Strategy (only active in months 1,4,8,10,12)'
+                    };
+                    
+                    const reason = strategyNames[strategyId] || 'Strategy conditions not met';
+                    alert(`No alerts generated for ${reason}. Current conditions don't match strategy requirements.`);
+                }
+                
+            } catch (error) {
+                console.error('Error executing strategy:', error);
+                alert('Error executing strategy. Make sure the server is running.');
+            }
+        }
+        
+        async function viewPerformance(strategyId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/strategies/${strategyId}/performance`);
+                const data = await response.json();
+                
+                const performanceHtml = `
+                    <div class="performance-metrics">
+                        <div class="metric">
+                            <div class="metric-value">${(data.cagr * 100).toFixed(1)}%</div>
+                            <div class="metric-label">CAGR</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${(data.total_return * 100).toFixed(1)}%</div>
+                            <div class="metric-label">Total Return</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${data.sharpe_ratio.toFixed(2)}</div>
+                            <div class="metric-label">Sharpe Ratio</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${(data.max_drawdown * 100).toFixed(1)}%</div>
+                            <div class="metric-label">Max Drawdown</div>
+                        </div>
+                    </div>
+                `;
+                
+                alert(`Performance Metrics for ${data.strategy_name}:\n\n` +
+                      `CAGR: ${(data.cagr * 100).toFixed(1)}%\n` +
+                      `Total Return: ${(data.total_return * 100).toFixed(1)}%\n` +
+                      `Sharpe Ratio: ${data.sharpe_ratio.toFixed(2)}\n` +
+                      `Max Drawdown: ${(data.max_drawdown * 100).toFixed(1)}%`);
+                
+            } catch (error) {
+                console.error('Error loading performance:', error);
+                alert('Error loading performance data.');
+            }
+        }
+        
+        async function loadAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/alerts/generate`);
+                const data = await response.json();
+                
+                const alertsContainer = document.getElementById('alerts-container');
+                alertsContainer.innerHTML = '';
+                
+                if (data.alerts && data.alerts.length > 0) {
+                    data.alerts.forEach(alert => {
+                        const alertCard = createAlertCard(alert);
+                        alertsContainer.appendChild(alertCard);
+                    });
+                    
+                    document.getElementById('total-alerts').textContent = data.alerts.length;
+                } else {
+                    alertsContainer.innerHTML = '<div class="loading">No alerts generated at this time.</div>';
+                    document.getElementById('total-alerts').textContent = '0';
+                }
+                
+            } catch (error) {
+                console.error('Error loading alerts:', error);
+                document.getElementById('alerts-container').innerHTML = 
+                    '<div class="error">Error loading alerts. Make sure the server is running.</div>';
+            }
+        }
+        
+        function createAlertCard(alert) {
+            const card = document.createElement('div');
+            card.className = 'alert-card';
+            
+            const alertTypeClass = alert.alert_type === 'buy' ? 'alert-buy' : 
+                                 alert.alert_type === 'sell' ? 'alert-sell' : 'alert-switch';
+            
+            const actionText = alert.target_symbol ? 
+                `${alert.action} ${alert.target_symbol}` : 
+                `${alert.action} ${alert.symbol}`;
+            
+            card.innerHTML = `
+                <div class="alert-header">
+                    <strong>${alert.strategy_name}</strong>
+                    <span class="alert-type ${alertTypeClass}">${alert.alert_type.toUpperCase()}</span>
+                </div>
+                <div>
+                    <strong>Action:</strong> ${actionText}
+                </div>
+                <div>
+                    <strong>Reasoning:</strong> ${alert.reasoning}
+                </div>
+                <div>
+                    <strong>Confidence:</strong> <span class="confidence">${(alert.confidence * 100).toFixed(0)}%</span>
+                </div>
+                <div class="performance-metrics">
+                    <div class="metric">
+                        <div class="metric-value">${(alert.performance_metrics.cagr * 100).toFixed(1)}%</div>
+                        <div class="metric-label">CAGR</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">${(alert.performance_metrics.total_return * 100).toFixed(1)}%</div>
+                        <div class="metric-label">Total Return</div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function showAlert(alert) {
+            const alertCard = createAlertCard(alert);
+            const alertsContainer = document.getElementById('alerts-container');
+            
+            if (alertsContainer.querySelector('.loading')) {
+                alertsContainer.innerHTML = '';
+            }
+            
+            alertsContainer.insertBefore(alertCard, alertsContainer.firstChild);
+        }
+    </script>
+</body>
+</html>

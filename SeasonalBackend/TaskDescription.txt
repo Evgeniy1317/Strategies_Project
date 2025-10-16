@@ -1,0 +1,11 @@
+I have these individual scripts each produces a handful of strategies. I have documented them in this spreadsheet: https://docs.google.com/spreadsheets/d/1Eo751wq0jrq8pEfmtaijh3O5nuKCMSUV-eSknnoLRI8/edit?usp=sharing
+
+My goal is to turn these python scripts into a "backend service" that can issue alerts to these strategies.
+
+We can assume there will be updated data by 18:00 EST (server is EST) and the data will be in Data/ folder like all the scripts show. Some strategies operate on the daily data. Some resample the data to monthly.
+
+For example, one of the strategies buys SLVRaw.txt and holds for all of January so after we receive the last bar in December I want an api response like "Strategy 7 should sell {symbol2} and buy SLV". We can discuss how to detect the "last bar in December". It won't be always Dec 31 because of weekends or holiday.
+
+I also want to return each strategy's CAGR, Total Return which the scripts should already calculate!
+
+Please let me know what questions you have and if you can help! I am expecting questions so ask any and all, no problem.
